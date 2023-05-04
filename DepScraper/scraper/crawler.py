@@ -8,7 +8,7 @@ from .downloader import download_target
 visited_dependencies = []
 
 
-def crawl_to(package: str, distribution: str):
+def crawl_to(package: str, output: str, distribution: str):
     global visited_dependencies
     URL = f"https://packages.debian.org/{distribution}/{package}"
     logger.info(f"[{package}]: Browsing to '{URL}'")
@@ -35,11 +35,11 @@ def crawl_to(package: str, distribution: str):
             links.append(link)
             visited_dependencies.append(link)
             logger.info(f"[{package}]: Found dependency: '{link}'")
-            crawl_to(link.split("/")[-1], distribution)
+            crawl_to(link.split("/")[-1], output, distribution)
         logger.success(f"[{package}]: Found all dependencies!")
     except IndexError:
         logger.info("Reached end of dependency tree branch!")
 
     logger.info(f"Downloading '{package}'")
     download_page_target = f"/{distribution}/amd64/{package}/download"
-    download_target(package, download_page_target)
+    download_target(package, download_page_target, output)
